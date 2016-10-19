@@ -8,9 +8,10 @@ import java.awt.*;
 
 public class UserInterface extends JFrame implements ActionListener {
 
-	private JPanel contentPane;						// Main Window
+	private JPanel contentPane;						// Main Window Panel
 	private String path;							// file path
-	private File file;								// file object
+	private static File file;						// file object
+	private JPanel titlePanel;						// top panel (TOP)
 	private JPanel center;							// center panel (CENTER)
 	private JPanel bottom;							// bottom panel (BOTTOM)
 	private int enteredQuestions;					// -User supplied- number of questions to use
@@ -99,7 +100,7 @@ public class UserInterface extends JFrame implements ActionListener {
 		
 		// Title Panel (TOP)
 		
-		JPanel titlePanel = new JPanel();
+		titlePanel = new JPanel();
 		JLabel titleLabel = new JLabel("Vocabulary Quiz");
 		titleLabel.setFont(new Font("Ravie", Font.PLAIN, 22));
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -334,8 +335,8 @@ public class UserInterface extends JFrame implements ActionListener {
 			fc.setFileFilter(filter);
 			int returnVal = fc.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				file = fc.getSelectedFile();
-				path = file.getAbsolutePath();
+				this.setFile(fc.getSelectedFile());					// sets file
+				path = getFile().getAbsolutePath();
 				txtFilePath.setText(path);
 				txtQuestions.setText("");
 				btnModifyQuiz.setEnabled(true);
@@ -344,40 +345,40 @@ public class UserInterface extends JFrame implements ActionListener {
 		}
 		if(e.getSource() == btnAddWord) {					// Add word
 			System.out.println("Add word " + word.getText() + ", definition " + def.getText());
-			if(def.getText().equals("")) {
+			if(def.getText().equals("") && !word.getText().equals("")) {
 				System.out.println("definition scrape request");
 				//**********
-				// scrape definition here
-				//*********
+				//def.setText(Scrape.webScrape(word.getText()));		// must be static to call from here
+				//********
 				def.setText("def_scrape");
 			}
 			sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
 			
 			//**********
-			// add word here -- must check that word.getText is not empty
+			// add word here -- check that word.getText is not empty
 			//*********
 		}
 		if(e.getSource() == btnReturn) {					// Return to main menu and add write buffer to file
 			try {
 				if(create == false) {
-					InputStream is = new FileInputStream(file);
+					InputStream is = new FileInputStream(getFile());
 					String previous = convertStreamToString(is);
 					System.out.println("Append previous contents:\n" + previous.toString() + " to bufferwriter");
 					prevBuffer = new StringBuffer(previous.toString());
 				}
 				else {
-					if(file.exists()) {
+					if(getFile().exists()) {
 						System.out.println("Delete");
-						file.delete();
+						getFile().delete();
 					}
 					try {
 						System.out.println("Create");
-						file.createNewFile();
+						getFile().createNewFile();
 					} catch (IOException ioe) {
 						System.out.println("File creation error");
 					}
 				}
-				bw = new BufferedWriter(new FileWriter(file));
+				bw = new BufferedWriter(new FileWriter(getFile()));
 				System.out.println("Append new contents:\n" + sb.toString() + " to bufferwriter");
 				if(create == false) {
 					bw.append(prevBuffer); 	// append prev contents if modifying file
@@ -389,6 +390,11 @@ public class UserInterface extends JFrame implements ActionListener {
 			} catch (IOException bwioe) {
 				System.out.println("bufferedwriter io error");
 			}
+			
+			//**********
+			// fill questions from file here -- the buffer has been written to the file
+			//*********
+			
 			wordPanel.setVisible(false);
 			btnFilePath.setEnabled(true);
 			buttonPanel.setVisible(true);
@@ -438,7 +444,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				return;
 			}
 			try {
-				if(file.exists() && enteredQuestions > 4 )
+				if(getFile().exists() && enteredQuestions > 4 )
 					btnStartQuiz.setEnabled(true);
 				/*
 				if(enteredQuestions > numQuestions) {		// disable btnStartQuiz if enteredQuestions > numQuestions
@@ -452,7 +458,11 @@ public class UserInterface extends JFrame implements ActionListener {
 			}
 			return;
 		}
-		if(e.getSource() == btnDeleteWord) {		// delete word 
+		if(e.getSource() == btnDeleteWord) {		// delete word
+			
+			// add word to a list, and when the file is read to the questions list,
+			// don't add any keys to the data structure that are in the remove list
+			
 			//**********
 			// delete a word here
 			//*********
@@ -480,5 +490,13 @@ public class UserInterface extends JFrame implements ActionListener {
 	    @SuppressWarnings("resource")
 		java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
 	    return s.hasNext() ? s.next() : "";
+	}
+
+	public static File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {				// do not use this, file is selected and verified through GUI
+		this.file = file;
 	}
 }
