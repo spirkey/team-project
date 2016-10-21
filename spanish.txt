@@ -1,30 +1,30 @@
-﻿Good morning. 	:Buenos días. 	booEHN-os DEE-as
-Good afternoon. 	:Buenas tardes. 	booEHN-as TAR-dehs
-Good evening. (greeting) 	:Buenas noches. 	booEHN-as NO-chehs
-Hello, my name is John. :Hola, me llamo Juan. 	OH-la meh YA-mo Wahn
-What is your name? 	:¿Cómo se llama usted? 	KOH-moh seh YA-mah oos-TEHD
-How are you? 	:¿Cómo está usted? 	KOH-moh ehs-TA oos-TEHD
-I am fine. 	:Estoy bien. 	ehs-TOY bee-EHN
-Nice to meet you. 	:Mucho gusto. 	MOO-choh GOOS-toh
-Goodbye. 	:Adiós. 	ah-dee-OHS
-See you later. 	:Hasta luego. 	AHS-ta looEH-go
-I am lost. Where is the restroom? 	:Estoy perdido. ¿Dónde está el baño? 	ehs-TOY pehr-DEE-doh. DOHN-deh ehs-TA el BAH-neeo
-Excuse me. 	:Con permiso. OR Perdóname 	kohn pehr-MEE-soh OR pehr-DOH-nah-meh
-Please. 	:Por favor. 	pohr fah-VOR
-Thank you. 	:Gracías. 	gra-SEE-ahs
-I'm sorry. 	:Lo siento. 	low see-EHN-to
-Bless you. 	:Salud. 	sah-LOOD
-You are welcome (it was nothing). 	:De nada. 	deh NA-da
-How much does it cost? 	:¿Cuánto cuesta? 	kooAN-to KWEHS-ta
-How many are there? 	:¿Cuántos hay? 	kooAN-tohs eye
-There are many. 	:Hay muchos. 	eye MOO-chohs
-Do you want to buy this? 	:¿Quiere comprarlo usted? 	kee-EHR-eh kohm-PRAR-loh oos-TEHD
-What time is it? 	:¿Qué hora es? 	keh OR-ah ehs
-How do you say maybe in Spanish? 	:¿Cómo se dice maybe en Español? 	KOH-mo seh DEE-seh maybe ehn ehs-pahn-YOL
-Yes. 	:Sí. 	see
-No. 	:No. 	no
-I do not understand. 	:Yo no comprendo. 	yoh no kom-PREN-doh
-Would you speak slower, please. 	:Por favor, habla mas despacio. 	pohr fah-VOR, AH-blah mahs dehs-PAHS-ee-oh
-Who? 	:¿Quièn? 	kee-EHN
-Why? 	:¿Por què? 	pohr keh
+﻿Good morning.:Buenos días. 	booEHN-os DEE-as
+Good afternoon.:Buenas tardes. 	booEHN-as TAR-dehs
+Good evening. (greeting):Buenas noches. 	booEHN-as NO-chehs
+Hello, my name is John.:Hola, me llamo Juan. 	OH-la meh YA-mo Wahn
+What is your name?:¿Cómo se llama usted? 	KOH-moh seh YA-mah oos-TEHD
+How are you?:¿Cómo está usted? 	KOH-moh ehs-TA oos-TEHD
+I am fine.:Estoy bien. 	ehs-TOY bee-EHN
+Nice to meet you.:Mucho gusto. 	MOO-choh GOOS-toh
+Goodbye.:Adiós. 	ah-dee-OHS
+See you later.:Hasta luego. 	AHS-ta looEH-go
+I am lost. Where is the restroom?:Estoy perdido. ¿Dónde está el baño? 	ehs-TOY pehr-DEE-doh. DOHN-deh ehs-TA el BAH-neeo
+Excuse me.:Con permiso. OR Perdóname 	kohn pehr-MEE-soh OR pehr-DOH-nah-meh
+Please.:Por favor. 	pohr fah-VOR
+Thank you.:Gracías. 	gra-SEE-ahs
+I'm sorry.:Lo siento. 	low see-EHN-to
+Bless you.:Salud. 	sah-LOOD
+You are welcome (it was nothing).:De nada. 	deh NA-da
+How much does it cost?:¿Cuánto cuesta? 	kooAN-to KWEHS-ta
+How many are there?:¿Cuántos hay? 	kooAN-tohs eye
+There are many.:Hay muchos. 	eye MOO-chohs
+Do you want to buy this?:¿Quiere comprarlo usted? 	kee-EHR-eh kohm-PRAR-loh oos-TEHD
+What time is it?:¿Qué hora es? 	keh OR-ah ehs
+How do you say maybe in Spanish?:¿Cómo se dice maybe en Español? 	KOH-mo seh DEE-seh maybe ehn ehs-pahn-YOL
+Yes.:Sí. 	see
+No.:No. 	no
+I do not understand.:Yo no comprendo. 	yoh no kom-PREN-doh
+Would you speak slower, please.:Por favor, habla mas despacio. 	pohr fah-VOR, AH-blah mahs dehs-PAHS-ee-oh
+Who?:¿Quièn? 	kee-EHN
+Why?:¿Por què? 	pohr keh
 
