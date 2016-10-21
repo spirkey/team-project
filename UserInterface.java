@@ -346,16 +346,17 @@ public class UserInterface extends JFrame implements ActionListener {
 			}
 		}
 		if(e.getSource() == btnAddWord) {					// Add word
-			System.out.println("Add word " + word.getText() + ", definition " + def.getText());
-			if(def.getText().equals("") && !word.getText().equals("")) {
-				System.out.println("definition scrape request");
-				//**********
-				//def.setText(Scrape.webScrape(word.getText()));		// must be static to call from here
-				//********
-				def.setText("def_scrape");
+			if(!word.getText().equals("")) {
+				if(def.getText().equals("")) {
+					System.out.println("definition scrape request");
+					//**********
+					//def.setText(Scrape.webScrape(word.getText()));		// must be static to call from here
+					//********
+					def.setText("def_scrape");
+				}
+				System.out.println("Add word " + word.getText() + ", definition " + def.getText());
+				sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
 			}
-			sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
-			
 			//**********
 			// add word here -- check that word.getText is not empty
 			//*********
@@ -389,13 +390,17 @@ public class UserInterface extends JFrame implements ActionListener {
 				System.out.println("bufferWriter written to file");
 				bw.flush();
 				bw.close();
+				
+				InputStream is = new FileInputStream(file);
+				String contents = convertStreamToString(is);
+				
+				//**********
+				// fill questions from file here -- the buffer has now been written to the file
+				//*********
+				
 			} catch (IOException bwioe) {
 				System.out.println("bufferedwriter io error");
 			}
-			
-			//**********
-			// fill questions from file here -- the buffer has been written to the file
-			//*********
 			
 			wordPanel.setVisible(false);
 			btnFilePath.setEnabled(true);
@@ -435,7 +440,6 @@ public class UserInterface extends JFrame implements ActionListener {
 				endPanel.setVisible(true);					// presents end panel
 				ta.setText(results.toString());
 				ta.setCaretPosition(0);						// sets cursor back to beginning of the text area so that user will scroll down
-				// end of end panel code
 			}
 			currentQuestion++;
 			
@@ -443,6 +447,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			// pull next quiz question here
 			//*********
 			
+			//question.setRight(false);
 			infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
 		}
 		if(e.getSource() == txtQuestions) {				// Quiz questions selection 
