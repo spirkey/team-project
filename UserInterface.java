@@ -7,10 +7,13 @@ import java.io.*;
 import java.awt.*;
 
 public class UserInterface extends JFrame implements ActionListener {
+	
+	private Question question;						// Question object
+	private StringBuilder results;					// hold results information
 
 	private JPanel contentPane;						// Main Window Panel
 	private String path;							// file path
-	private static File file;						// file object
+	private File file;								// file object
 	private JPanel titlePanel;						// top panel (TOP)
 	private JPanel center;							// center panel (CENTER)
 	private JPanel bottom;							// bottom panel (BOTTOM)
@@ -289,17 +292,7 @@ public class UserInterface extends JFrame implements ActionListener {
 		resultsPanel.setLayout(null);
 		resultsPanel.add(sp);						// add scroll pane to results panel
 		
-		//************		This section will set the quiz results output
-		StringBuilder s = new StringBuilder();
-		for(int i = 0; i < 10; i++) {
-			s.append("filler text");
-			s.append(System.getProperty("line.separator"));
-		}
-		s.append("there is no horizontal scroll bar because this text area is set to wrap long lines of text.");
-		ta.setText(s.toString());
-        //*************
 		
-		ta.setCaretPosition(0);						// sets cursor back to beginning of the text area so that user will scroll down
 	}
 	
 	// Action handlers for everything
@@ -312,11 +305,20 @@ public class UserInterface extends JFrame implements ActionListener {
 			filePanel.setVisible(false);
 			infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
 			infoPanel.setVisible(true);
-
+			
 			//**********
 			// pull first quiz question here
 			//*********
 			
+			question = new Question("what color is an orange?", "green", "blue", "orange", "purple", "orange");
+			results = new StringBuilder();
+			radio1.setText(question.getA());
+			radio2.setText(question.getB());
+			radio3.setText(question.getC());
+			radio4.setText(question.getD());
+			lblQuestion.setText(question.getQuestion());
+
+			//*********
 			currentQuestion = 1;
 			infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
 		}
@@ -335,8 +337,8 @@ public class UserInterface extends JFrame implements ActionListener {
 			fc.setFileFilter(filter);
 			int returnVal = fc.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				this.setFile(fc.getSelectedFile());					// sets file
-				path = getFile().getAbsolutePath();
+				file = fc.getSelectedFile();					// sets file
+				path = file.getAbsolutePath();
 				txtFilePath.setText(path);
 				txtQuestions.setText("");
 				btnModifyQuiz.setEnabled(true);
@@ -361,24 +363,24 @@ public class UserInterface extends JFrame implements ActionListener {
 		if(e.getSource() == btnReturn) {					// Return to main menu and add write buffer to file
 			try {
 				if(create == false) {
-					InputStream is = new FileInputStream(getFile());
+					InputStream is = new FileInputStream(file);
 					String previous = convertStreamToString(is);
 					System.out.println("Append previous contents:\n" + previous.toString() + " to bufferwriter");
 					prevBuffer = new StringBuffer(previous.toString());
 				}
 				else {
-					if(getFile().exists()) {
+					if(file.exists()) {
 						System.out.println("Delete");
-						getFile().delete();
+						file.delete();
 					}
 					try {
 						System.out.println("Create");
-						getFile().createNewFile();
+						file.createNewFile();
 					} catch (IOException ioe) {
 						System.out.println("File creation error");
 					}
 				}
-				bw = new BufferedWriter(new FileWriter(getFile()));
+				bw = new BufferedWriter(new FileWriter(file));
 				System.out.println("Append new contents:\n" + sb.toString() + " to bufferwriter");
 				if(create == false) {
 					bw.append(prevBuffer); 	// append prev contents if modifying file
@@ -406,24 +408,34 @@ public class UserInterface extends JFrame implements ActionListener {
 			String s = "";
 			if(radio1.isSelected()) {
 				s = radio1.getText();
+				question.pick(question.getA());
 			}
 			else if(radio2.isSelected()) {					// user enters answers here
 				s = radio2.getText();
+				question.pick(question.getB());
 			}
 			else if(radio3.isSelected()) {
 				s = radio3.getText();
+				question.pick(question.getC());
 			}
 			else if(radio4.isSelected()) {
 				s = radio4.getText();
+				question.pick(question.getD());
 			}
+			results.append(question.printResults());
+			results.append("\n********\n");
 			rg.clearSelection();							// *******
 			btnNext.setEnabled(false);
-			System.out.println("You chose " + s);
+			//
+			System.out.println("You chose " + s + " that is " + question.isRight());
 			if(currentQuestion == enteredQuestions) {		// handles end of quiz
 				quizPanel.setVisible(false);				// hides quiz interface (CENTER)
 				resultsPanel.setVisible(true);				// presents results text area in scroll panel
 				infoPanel.setVisible(false);				// hides info panel (SOUTH) 
-				endPanel.setVisible(true);					// presents 
+				endPanel.setVisible(true);					// presents end panel
+				ta.setText(results.toString());
+				ta.setCaretPosition(0);						// sets cursor back to beginning of the text area so that user will scroll down
+				// end of end panel code
 			}
 			currentQuestion++;
 			
@@ -444,7 +456,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				return;
 			}
 			try {
-				if(getFile().exists() && enteredQuestions > 4 )
+				if(file.exists() && enteredQuestions > 4 )
 					btnStartQuiz.setEnabled(true);
 				/*
 				if(enteredQuestions > numQuestions) {		// disable btnStartQuiz if enteredQuestions > numQuestions
@@ -490,13 +502,5 @@ public class UserInterface extends JFrame implements ActionListener {
 	    @SuppressWarnings("resource")
 		java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
 	    return s.hasNext() ? s.next() : "";
-	}
-
-	public static File getFile() {
-		return file;
-	}
-
-	public void setFile(File file) {				// do not use this, file is selected and verified through GUI
-		this.file = file;
 	}
 }
