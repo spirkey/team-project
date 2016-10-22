@@ -10,6 +10,8 @@ public class UserInterface extends JFrame implements ActionListener {
 	
 	private Question question;						// Question object
 	private StringBuilder results;					// hold results information
+	
+	private Scrape scrape;							// Definition scrape object
 
 	private JPanel contentPane;						// Main Window Panel
 	private String path;							// file path
@@ -350,7 +352,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				if(def.getText().equals("")) {
 					System.out.println("definition scrape request");
 					//**********
-					//def.setText(Scrape.webScrape(word.getText()));		// must be static to call from here
+					def.setText(scrape.webScrape(word.getText()));
 					//********
 					def.setText("def_scrape");
 				}
@@ -393,6 +395,13 @@ public class UserInterface extends JFrame implements ActionListener {
 				
 				InputStream is = new FileInputStream(file);
 				String contents = convertStreamToString(is);
+				
+				quiz_Logic2 ql = new quiz_Logic2();
+				
+				ql.readContents(contents);
+				//System.out.println(" ");
+				System.out.println(ql.toString());
+				System.out.println(ql.randomValue("How many are there?"));
 				
 				//**********
 				// fill questions from file here -- the buffer has now been written to the file
@@ -498,8 +507,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			resultsPanel.setVisible(false);			// hide results panel
 			buttonPanel.setVisible(true);			// present button panel (CENTER)
 			endPanel.setVisible(false);				// hide end panel
-			filePanel.setVisible(true);				// present file panel (BOTTOM)
-			
+			filePanel.setVisible(true);				// present file panel (BOTTOM)	
 		}
 	}
 	
