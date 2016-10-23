@@ -51,6 +51,8 @@ public class quiz_Logic2 {
 			Random random = new Random();
 			List<String> keys = new ArrayList<String>(map.keySet());
 			String randomKey = map.get(keys.get( random.nextInt(keys.size()) ));
+			while (randomKey.equals(key))
+				randomKey = map.get(keys.get( random.nextInt(keys.size()) ));
 			return randomKey;
 		}
 		//the Question class

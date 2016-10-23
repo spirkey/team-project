@@ -4,12 +4,23 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
+import java.util.*;
 import java.awt.*;
 
 public class UserInterface extends JFrame implements ActionListener {
 	
 	private Question question;						// Question object
 	private StringBuilder results;					// hold results information
+	
+	private quiz_Logic2 quizLogic = new quiz_Logic2(); // quiz logic
+	private String contents;								// content of text file
+	private String wrongAnswer1;						// incorrect answers
+	private String wrongAnswer2;
+	private String wrongAnswer3;
+	private Set words;								// data structures and 'readers'
+	private Iterator wordsItr;
+	private Collection<String> defs;
+	private Iterator defsItr;
 	
 	private Scrape scrape;							// Definition scrape object
 
@@ -308,19 +319,74 @@ public class UserInterface extends JFrame implements ActionListener {
 			infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
 			infoPanel.setVisible(true);
 			
-			//**********
-			// pull first quiz question here
-			//*********
+			// load map and present first quiz question
+			try {
+				InputStream is = new FileInputStream(file);
+				contents = convertStreamToString(is);
+				quizLogic.readContents(contents);		// fill map with 'word:def''s
+			} catch (IOException qsioe) {
+				System.out.println("quiz start io error");
+			}
 			
-			question = new Question("what color is an orange?", "green", "blue", "orange", "purple", "orange");
-			results = new StringBuilder();
-			radio1.setText(question.getA());
-			radio2.setText(question.getB());
-			radio3.setText(question.getC());
-			radio4.setText(question.getD());
-			lblQuestion.setText(question.getQuestion());
+			words = quizLogic.map.keySet();
+			wordsItr = words.iterator();
+			defs = quizLogic.map.values();
+			defsItr = defs.iterator();
+			
+			// load first question and definition from file  -- should update to pick a random question, and add that ftn to the next button
+			String ques = wordsItr.next().toString();
+			String def = defsItr.next().toString();
+			//
+			
+			// generate 3 random wrong answers
+			wrongAnswer1 = quizLogic.randomValue(def);
+			wrongAnswer2 = quizLogic.randomValue(def);
+			while(wrongAnswer2.equals(wrongAnswer1)) {
+				wrongAnswer2 = quizLogic.randomValue(def);
+			}
+			wrongAnswer3 = quizLogic.randomValue(def);
+			while((wrongAnswer3.equals(wrongAnswer1)) && (wrongAnswer3.equals(wrongAnswer2)) )  {
+				wrongAnswer3 = quizLogic.randomValue(def);
+			}
+			
+			// randomize a,b,c,d order
+			String a = "",b = "",c = "",d = "";
+			Random r = new Random(System.currentTimeMillis());
+			int randInt = r.nextInt(4);
+			if(randInt == 0) {
+				a = def;
+				b = wrongAnswer2;
+				c = wrongAnswer1;
+				d = wrongAnswer3;
+			}
+			else if(randInt == 1) {
+				b = def;
+				a = wrongAnswer3;
+				c = wrongAnswer2;
+				d = wrongAnswer1;
+			}
+			else if(randInt == 2) {
+				c = def;
+				a = wrongAnswer1;
+				b = wrongAnswer3;
+				d = wrongAnswer2;
+			}
+			else if(randInt == 3) {
+				d = def;
+				a = wrongAnswer2;
+				b = wrongAnswer1;
+				c = wrongAnswer3;
+			}
+			question = new Question(ques, a, b, c, d, def);
 
 			//*********
+
+			results = new StringBuilder();
+			radio1.setText(a);
+			radio2.setText(b);
+			radio3.setText(c);
+			radio4.setText(d);
+			lblQuestion.setText(question.getQuestion());
 			currentQuestion = 1;
 			infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
 		}
@@ -359,9 +425,6 @@ public class UserInterface extends JFrame implements ActionListener {
 				System.out.println("Add word " + word.getText() + ", definition " + def.getText());
 				sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
 			}
-			//**********
-			// add word here -- check that word.getText is not empty
-			//*********
 		}
 		if(e.getSource() == btnReturn) {					// Return to main menu and add write buffer to file
 			try {
@@ -392,21 +455,6 @@ public class UserInterface extends JFrame implements ActionListener {
 				System.out.println("bufferWriter written to file");
 				bw.flush();
 				bw.close();
-				
-				InputStream is = new FileInputStream(file);
-				String contents = convertStreamToString(is);
-				
-				quiz_Logic2 ql = new quiz_Logic2();
-				
-				ql.readContents(contents);
-				//System.out.println(" ");
-				System.out.println(ql.toString());
-				System.out.println(ql.randomValue("How many are there?"));
-				
-				//**********
-				// fill questions from file here -- the buffer has now been written to the file
-				//*********
-				
 			} catch (IOException bwioe) {
 				System.out.println("bufferedwriter io error");
 			}
