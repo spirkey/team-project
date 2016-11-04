@@ -55,24 +55,5 @@ public class quiz_Logic2 {
 				randomKey = map.get(keys.get( random.nextInt(keys.size()) ));
 			return randomKey;
 		}
-		//the Question class
 		
-		/*
-		public class Question {
-		private int TimesMissed;	//how many times the question was missed
-		private Word key;			// holds the word
-		private String Definition;	//holds the definition
-		
-		// Accepts a String with format "Word:Definition" and creates a Question Object
-		public Question(String s){
-			//Splits it using regex ":" into an array of two subStrings
-			//super(String word, String definition); // creates a Pair using the 2 subStrings
-				this.TimesMissed=0; 
-			}
-			
-			public boolean equals(Question Q2){
-				return key.equals(Q2.key);
-			}	
-		}
-		*/
 }

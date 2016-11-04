@@ -17,7 +17,7 @@ public class Question {
 		this.a = a;
 		this.b = b;
 		this.c = c;
-		this.d = d;
+		this.d = b;
 		this.correctChoice = correctChoice;
 		
 		this.right = false;
@@ -29,15 +29,16 @@ public class Question {
 			this.right = true;
 			return true;
 		}
+		this.right = false;
 		return false;
 	}
 	public String printQuestion(){
 		String str = "";
-		str =	"Question: " + question + 
-				"a: " + a 
+		str =	"Question:" + question + 
+				"\na: " + a 
 				+ "\nb: " + b
 				+ "\nc: " + c
-				+ "\nd: " + b
+				+ "\nd: " + d
 				;
 		return str;
 	}
@@ -45,15 +46,15 @@ public class Question {
 	public String printResults(){
 		String str = "";
 		str =	"Question: " + question + 
-				"a: " + a 
+				"\na: " + a 
 				+ "\nb: " + b
 				+ "\nc: " + c
-				+ "\nd: " + b;
+				+ "\nd: " + d;
 		if(right == true){
 			str+= "\nYou got it right!";
 		}
 		else{
-			str+= "\nYou Got it wrong!";
+			str+= "\nYou got it wrong!";
 			str+= "\nThe right answer is " + correctChoice;
 		}
 		str+= "\nYou picked "  + choice;

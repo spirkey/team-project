@@ -13,16 +13,19 @@ public class UserInterface extends JFrame implements ActionListener {
 	private StringBuilder results;					// hold results information
 	
 	private quiz_Logic2 quizLogic = new quiz_Logic2(); // quiz logic
+	private Random r = new Random(System.currentTimeMillis()); // random
 	private String contents;								// content of text file
 	private String wrongAnswer1;						// incorrect answers
 	private String wrongAnswer2;
 	private String wrongAnswer3;
+	private Stack<Integer> used;						// used words
 	private Set words;								// data structures and 'readers'
 	private Iterator wordsItr;
-	private Collection<String> defs;
+	private Collection defs;
 	private Iterator defsItr;
+	private int correctAns = 0;						// number of correct answers for results view
 	
-	private Scrape scrape;							// Definition scrape object
+	private Scrape scrape = new Scrape();			// Definition scrape object
 
 	private JPanel contentPane;						// Main Window Panel
 	private String path;							// file path
@@ -32,7 +35,7 @@ public class UserInterface extends JFrame implements ActionListener {
 	private JPanel bottom;							// bottom panel (BOTTOM)
 	private int enteredQuestions;					// -User supplied- number of questions to use
 	private int numQuestions;						// The length of the list or number of actual questions
-	private int currentQuestion = 1;				// Question the user is on 
+	private int currentQuestion;					// Question the user is on 
 	
 	// button panel items 
 	private JPanel buttonPanel;						// Button panel
@@ -304,8 +307,6 @@ public class UserInterface extends JFrame implements ActionListener {
 		sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		resultsPanel.setLayout(null);
 		resultsPanel.add(sp);						// add scroll pane to results panel
-		
-		
 	}
 	
 	// Action handlers for everything
@@ -334,10 +335,17 @@ public class UserInterface extends JFrame implements ActionListener {
 			defsItr = defs.iterator();
 			
 			// load first question and definition from file  -- should update to pick a random question, and add that ftn to the next button
-			String ques = wordsItr.next().toString();
-			String def = defsItr.next().toString();
-			//
+			int questionSelect = r.nextInt(words.size()) + 1; 
+			String ques = " ";
+			String def = " ";
+			for(int i = 0; i < questionSelect; i++) {
+				ques = wordsItr.next().toString();
+				def = defsItr.next().toString();
+			}
 			
+			used = new Stack();
+			used.push((Integer) questionSelect);			// stack of generated numbers
+		
 			// generate 3 random wrong answers
 			wrongAnswer1 = quizLogic.randomValue(def);
 			wrongAnswer2 = quizLogic.randomValue(def);
@@ -345,13 +353,12 @@ public class UserInterface extends JFrame implements ActionListener {
 				wrongAnswer2 = quizLogic.randomValue(def);
 			}
 			wrongAnswer3 = quizLogic.randomValue(def);
-			while((wrongAnswer3.equals(wrongAnswer1)) && (wrongAnswer3.equals(wrongAnswer2)) )  {
+			while((wrongAnswer3.equals(wrongAnswer1)) || (wrongAnswer3.equals(wrongAnswer2)) )  {
 				wrongAnswer3 = quizLogic.randomValue(def);
 			}
 			
 			// randomize a,b,c,d order
 			String a = "",b = "",c = "",d = "";
-			Random r = new Random(System.currentTimeMillis());
 			int randInt = r.nextInt(4);
 			if(randInt == 0) {
 				a = def;
@@ -378,7 +385,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				c = wrongAnswer3;
 			}
 			question = new Question(ques, a, b, c, d, def);
-
+			
 			//*********
 
 			results = new StringBuilder();
@@ -389,6 +396,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			lblQuestion.setText(question.getQuestion());
 			currentQuestion = 1;
 			infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
+			
 		}
 		if(e.getSource() == btnCreateQuiz || e.getSource() == btnModifyQuiz) {
 			buttonPanel.setVisible(false);
@@ -416,11 +424,10 @@ public class UserInterface extends JFrame implements ActionListener {
 		if(e.getSource() == btnAddWord) {					// Add word
 			if(!word.getText().equals("")) {
 				if(def.getText().equals("")) {
-					System.out.println("definition scrape request");
+					System.out.println("definition scrape request on " + word.getText());
 					//**********
 					def.setText(scrape.webScrape(word.getText()));
 					//********
-					def.setText("def_scrape");
 				}
 				System.out.println("Add word " + word.getText() + ", definition " + def.getText());
 				sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
@@ -484,13 +491,19 @@ public class UserInterface extends JFrame implements ActionListener {
 				s = radio4.getText();
 				question.pick(question.getD());
 			}
+			if(question.isRight()) {
+				correctAns++;
+			}
 			results.append(question.printResults());
 			results.append("\n********\n");
 			rg.clearSelection();							// *******
 			btnNext.setEnabled(false);
-			//
+			
 			System.out.println("You chose " + s + " that is " + question.isRight());
+			
+			// detect end of quiz
 			if(currentQuestion == enteredQuestions) {		// handles end of quiz
+				results.append("You scored " + correctAns + " out of " + enteredQuestions);
 				quizPanel.setVisible(false);				// hides quiz interface (CENTER)
 				resultsPanel.setVisible(true);				// presents results text area in scroll panel
 				infoPanel.setVisible(false);				// hides info panel (SOUTH) 
@@ -500,17 +513,80 @@ public class UserInterface extends JFrame implements ActionListener {
 			}
 			currentQuestion++;
 			
-			//**********
-			// pull next quiz question here
-			//*********
+			wordsItr = words.iterator();
+			defsItr = defs.iterator();
 			
-			//question.setRight(false);
+			// load an unusued question and definition from file  -- should update to pick a random question, and add that ftn to the next button
+			int questionSelect = r.nextInt(words.size()) + 1;
+			while (used.contains((Integer) questionSelect)) {
+				questionSelect = r.nextInt(words.size()) + 1;
+			}
+			used.push((Integer) questionSelect);
+			String ques = " ";
+			String def = " ";
+			for(int i = 0; i < questionSelect; i++) {
+				ques = wordsItr.next().toString();
+				def = defsItr.next().toString();
+			}
+			
+			// generate 3 random wrong answers
+			wrongAnswer1 = quizLogic.randomValue(def);
+			wrongAnswer2 = quizLogic.randomValue(def);
+			while(wrongAnswer2.equals(wrongAnswer1)) {
+				wrongAnswer2 = quizLogic.randomValue(def);
+			}
+			wrongAnswer3 = quizLogic.randomValue(def);
+			while((wrongAnswer3.equals(wrongAnswer1)) || (wrongAnswer3.equals(wrongAnswer2)) )  {
+				wrongAnswer3 = quizLogic.randomValue(def);
+			}
+			
+			// randomize a,b,c,d order
+			String a = "",b = "",c = "",d = "";
+			int randInt = r.nextInt(4);
+			if(randInt == 0) {
+				a = def;
+				b = wrongAnswer2;
+				c = wrongAnswer1;
+				d = wrongAnswer3;
+			}
+			else if(randInt == 1) {
+				b = def;
+				a = wrongAnswer3;
+				c = wrongAnswer2;
+				d = wrongAnswer1;
+			}
+			else if(randInt == 2) {
+				c = def;
+				a = wrongAnswer1;
+				b = wrongAnswer3;
+				d = wrongAnswer2;
+			}
+			else if(randInt == 3) {
+				d = def;
+				a = wrongAnswer2;
+				b = wrongAnswer1;
+				c = wrongAnswer3;
+			}
+			question = new Question(ques, a, b, c, d, def);
+			
+			if(question.isRight()) {
+				correctAns++;
+			}
+			
+			//*********
+
+			radio1.setText(a);
+			radio2.setText(b);
+			radio3.setText(c);
+			radio4.setText(d);
+			lblQuestion.setText(question.getQuestion());
+			
 			infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
 		}
 		if(e.getSource() == txtQuestions) {				// Quiz questions selection 
 			String s = txtQuestions.getText();
 			try {
-				enteredQuestions = Integer.valueOf(s);
+				enteredQuestions = Integer.parseInt(s);
 			}
 			catch(NumberFormatException nfe) {			// disables btnStartQuiz if it can't parse the text to integer
 				btnStartQuiz.setEnabled(false);
@@ -560,7 +636,7 @@ public class UserInterface extends JFrame implements ActionListener {
 	}
 	
 	static String convertStreamToString(InputStream is) {		// snippet of code for file reading
-	    @SuppressWarnings("resource")
+	    //@SuppressWarnings("resource")
 		java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
 	    return s.hasNext() ? s.next() : "";
 	}
