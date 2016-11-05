@@ -17,7 +17,7 @@ public class Question {
 		this.a = a;
 		this.b = b;
 		this.c = c;
-		this.d = b;
+		this.d = d;
 		this.correctChoice = correctChoice;
 		
 		this.right = false;

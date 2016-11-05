@@ -12,18 +12,18 @@ public class UserInterface extends JFrame implements ActionListener {
 	private Question question;						// Question object
 	private StringBuilder results;					// hold results information
 	
-	private quiz_Logic2 quizLogic = new quiz_Logic2(); // quiz logic
-	private Random r = new Random(System.currentTimeMillis()); // random
-	private String contents;								// content of text file
-	private String wrongAnswer1;						// incorrect answers
+	private quiz_Logic2 quizLogic = new quiz_Logic2();			// quiz logic
+	private Random r = new Random(System.currentTimeMillis());	// random
+	private String contents;						// content of text file
+	private String wrongAnswer1;					// incorrect answers
 	private String wrongAnswer2;
 	private String wrongAnswer3;
-	private Stack<Integer> used;						// used words
+	private Stack<Integer> used;					// used words
 	private Set words;								// data structures and 'readers'
 	private Iterator wordsItr;
 	private Collection defs;
 	private Iterator defsItr;
-	private int correctAns = 0;						// number of correct answers for results view
+	private int correctAns;							// number of correct answers for results view
 	
 	private Scrape scrape = new Scrape();			// Definition scrape object
 
@@ -387,7 +387,8 @@ public class UserInterface extends JFrame implements ActionListener {
 			question = new Question(ques, a, b, c, d, def);
 			
 			//*********
-
+			
+			correctAns = 0;
 			results = new StringBuilder();
 			radio1.setText(a);
 			radio2.setText(b);
@@ -424,13 +425,19 @@ public class UserInterface extends JFrame implements ActionListener {
 		if(e.getSource() == btnAddWord) {					// Add word
 			if(!word.getText().equals("")) {
 				if(def.getText().equals("")) {
-					System.out.println("definition scrape request on " + word.getText());
-					//**********
-					def.setText(scrape.webScrape(word.getText()));
-					//********
+					//System.out.println("definition scrape request on " + word.getText());
+					String web_definition = scrape.webScrape(word.getText());
+					if(!web_definition.equals("")) {
+						def.setText(web_definition);
+					}
+					else {
+						System.out.println("web scrape for input " + word.getText() + " failed.");
+					}	
 				}
-				System.out.println("Add word " + word.getText() + ", definition " + def.getText());
-				sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
+				if(!def.getText().equals("")) {
+					System.out.println("Word: " + word.getText() + ", Def: " + def.getText());
+					sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
+				}
 			}
 		}
 		if(e.getSource() == btnReturn) {					// Return to main menu and add write buffer to file
@@ -573,8 +580,6 @@ public class UserInterface extends JFrame implements ActionListener {
 				correctAns++;
 			}
 			
-			//*********
-
 			radio1.setText(a);
 			radio2.setText(b);
 			radio3.setText(c);
