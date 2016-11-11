@@ -1,5 +1,3 @@
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -33,8 +31,7 @@ public class UserInterface extends JFrame implements ActionListener {
 	private JPanel titlePanel;						// top panel (TOP)
 	private JPanel center;							// center panel (CENTER)
 	private JPanel bottom;							// bottom panel (BOTTOM)
-	private int enteredQuestions;					// -User supplied- number of questions to use
-	private int numQuestions;						// The length of the list or number of actual questions
+	private int enteredQuestions;					// User supplied number of questions to use
 	private int currentQuestion;					// Question the user is on 
 	
 	// button panel items 
@@ -47,7 +44,7 @@ public class UserInterface extends JFrame implements ActionListener {
 	// word panel items
 	private JPanel wordPanel;						// Word panel
 	private JTextField word;						// Field to hold word
-	private JTextField def;							// Field to hold definition
+	private JTextArea def;							// Field to hold definition
 	private JButton	btnAddWord;						// Add Word button
 	private JButton btnDeleteWord;					// Remove word button
 	private JButton btnReturn;						// Return to button panel
@@ -86,6 +83,7 @@ public class UserInterface extends JFrame implements ActionListener {
 	// info panel items --
 	private JPanel infoPanel;						// info panel
 	private JLabel infoLabel;						// information space
+	private JButton btnSearchWord;
 	
 	/**
 	 * Launch the application.
@@ -157,7 +155,7 @@ public class UserInterface extends JFrame implements ActionListener {
 		btnModifyQuiz.addActionListener(this);
 		
 		JLabel lblQuestions = new JLabel("Number of Questions:");
-		lblQuestions.setToolTipText("Must be greater than 4 and less than the number of quiz terms");
+		//lblQuestions.setToolTipText("Must be greater than 4 and less than the number of quiz terms");
         lblQuestions.setBounds(125, 158, 133, 22);
         buttonPanel.add(lblQuestions);
 		
@@ -189,24 +187,30 @@ public class UserInterface extends JFrame implements ActionListener {
 		lblDefinition.setBounds(46, 58, 70, 14);
 		wordPanel.add(lblDefinition);
 		
-		def = new JTextField();
+		def = new JTextArea();
+		def.setLineWrap(true);
+		def.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 		def.setBounds(120, 61, 257, 64);
 		wordPanel.add(def);
 		def.setColumns(18);
 		
 		btnAddWord = new JButton("Add word");
-		btnAddWord.setBounds(70, 136, 101, 31);
+		btnAddWord.setBounds(12, 136, 101, 31);
 		wordPanel.add(btnAddWord);
 		btnAddWord.addActionListener(this);
 		
-
+		btnSearchWord = new JButton("Search");
+		btnSearchWord.setBounds(120, 136, 101, 31);
+		wordPanel.add(btnSearchWord);
+		btnSearchWord.addActionListener(this);
+		
 		btnDeleteWord = new JButton("Strike word");
-		btnDeleteWord.setBounds(181, 136, 101, 31);
+		btnDeleteWord.setBounds(231, 136, 100, 31);
 		wordPanel.add(btnDeleteWord);
 		btnDeleteWord.addActionListener(this);
 		
 		btnReturn = new JButton("Return");
-		btnReturn.setBounds(292, 136, 97, 31);
+		btnReturn.setBounds(335, 136, 97, 31);
 		wordPanel.add(btnReturn);
 		btnReturn.addActionListener(this);
 		
@@ -312,91 +316,99 @@ public class UserInterface extends JFrame implements ActionListener {
 	// Action handlers for everything
 	
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == btnStartQuiz) {					// Start Quiz
-			buttonPanel.setVisible(false);
-			wordPanel.setVisible(false);
-			quizPanel.setVisible(true);
-			filePanel.setVisible(false);
-			infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
-			infoPanel.setVisible(true);
-			
-			// load map and present first quiz question
-			try {
-				InputStream is = new FileInputStream(file);
-				contents = convertStreamToString(is);
-				quizLogic.readContents(contents);		// fill map with 'word:def''s
-			} catch (IOException qsioe) {
-				System.out.println("quiz start io error");
+		if(e.getSource() == btnStartQuiz) {// Start Quiz
+			if(enteredQuestions < 4) {
+				JOptionPane.showMessageDialog(contentPane, "Quiz must consist of 4+ questions.");
 			}
-			
-			words = quizLogic.map.keySet();
-			wordsItr = words.iterator();
-			defs = quizLogic.map.values();
-			defsItr = defs.iterator();
-			
-			// load first question and definition from file  -- should update to pick a random question, and add that ftn to the next button
-			int questionSelect = r.nextInt(words.size()) + 1; 
-			String ques = " ";
-			String def = " ";
-			for(int i = 0; i < questionSelect; i++) {
-				ques = wordsItr.next().toString();
-				def = defsItr.next().toString();
+			else if(!file.exists()) {
+				JOptionPane.showMessageDialog(contentPane, "Quiz file not found.");
 			}
+			else {
+				buttonPanel.setVisible(false);
+				wordPanel.setVisible(false);
+				quizPanel.setVisible(true);
+				filePanel.setVisible(false);
+				infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
+				infoPanel.setVisible(true);
+				
+				// load map and present first quiz question
+				try {
+					InputStream is = new FileInputStream(file);
+					contents = convertStreamToString(is);
+					quizLogic.readContents(contents);		// fill map with 'word:def''s
+				} catch (IOException qsioe) {
+					System.out.println("quiz start io error");
+				}
+				
+				words = quizLogic.map.keySet();
+				wordsItr = words.iterator();
+				defs = quizLogic.map.values();
+				defsItr = defs.iterator();
+				
+				// load first question and definition from file  -- should update to pick a random question, and add that ftn to the next button
+				int questionSelect = r.nextInt(words.size()) + 1; 
+				String ques = " ";
+				String def = " ";
+				for(int i = 0; i < questionSelect; i++) {
+					ques = wordsItr.next().toString();
+					def = defsItr.next().toString();
+				}
+				
+				used = new Stack();
+				used.push((Integer) questionSelect);			// stack of generated numbers
 			
-			used = new Stack();
-			used.push((Integer) questionSelect);			// stack of generated numbers
-		
-			// generate 3 random wrong answers
-			wrongAnswer1 = quizLogic.randomValue(def);
-			wrongAnswer2 = quizLogic.randomValue(def);
-			while(wrongAnswer2.equals(wrongAnswer1)) {
+				// generate 3 random wrong answers
+				wrongAnswer1 = quizLogic.randomValue(def);
 				wrongAnswer2 = quizLogic.randomValue(def);
-			}
-			wrongAnswer3 = quizLogic.randomValue(def);
-			while((wrongAnswer3.equals(wrongAnswer1)) || (wrongAnswer3.equals(wrongAnswer2)) )  {
+				while(wrongAnswer2.equals(wrongAnswer1)) {
+					wrongAnswer2 = quizLogic.randomValue(def);
+				}
 				wrongAnswer3 = quizLogic.randomValue(def);
+				while((wrongAnswer3.equals(wrongAnswer1)) || (wrongAnswer3.equals(wrongAnswer2)) )  {
+					wrongAnswer3 = quizLogic.randomValue(def);
+				}
+				
+				// randomize a,b,c,d order
+				String a = "",b = "",c = "",d = "";
+				int randInt = r.nextInt(4);
+				if(randInt == 0) {
+					a = def;
+					b = wrongAnswer2;
+					c = wrongAnswer1;
+					d = wrongAnswer3;
+				}
+				else if(randInt == 1) {
+					b = def;
+					a = wrongAnswer3;
+					c = wrongAnswer2;
+					d = wrongAnswer1;
+				}
+				else if(randInt == 2) {
+					c = def;
+					a = wrongAnswer1;
+					b = wrongAnswer3;
+					d = wrongAnswer2;
+				}
+				else if(randInt == 3) {
+					d = def;
+					a = wrongAnswer2;
+					b = wrongAnswer1;
+					c = wrongAnswer3;
+				}
+				question = new Question(ques, a, b, c, d, def);
+				
+				//*********
+				
+				correctAns = 0;
+				results = new StringBuilder();
+				radio1.setText(a);
+				radio2.setText(b);
+				radio3.setText(c);
+				radio4.setText(d);
+				lblQuestion.setText(question.getQuestion());
+				currentQuestion = 1;
+				infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
 			}
-			
-			// randomize a,b,c,d order
-			String a = "",b = "",c = "",d = "";
-			int randInt = r.nextInt(4);
-			if(randInt == 0) {
-				a = def;
-				b = wrongAnswer2;
-				c = wrongAnswer1;
-				d = wrongAnswer3;
-			}
-			else if(randInt == 1) {
-				b = def;
-				a = wrongAnswer3;
-				c = wrongAnswer2;
-				d = wrongAnswer1;
-			}
-			else if(randInt == 2) {
-				c = def;
-				a = wrongAnswer1;
-				b = wrongAnswer3;
-				d = wrongAnswer2;
-			}
-			else if(randInt == 3) {
-				d = def;
-				a = wrongAnswer2;
-				b = wrongAnswer1;
-				c = wrongAnswer3;
-			}
-			question = new Question(ques, a, b, c, d, def);
-			
-			//*********
-			
-			correctAns = 0;
-			results = new StringBuilder();
-			radio1.setText(a);
-			radio2.setText(b);
-			radio3.setText(c);
-			radio4.setText(d);
-			lblQuestion.setText(question.getQuestion());
-			currentQuestion = 1;
-			infoLabel.setText(path + " :: Question: " + currentQuestion + "/" + enteredQuestions);
 			
 		}
 		if(e.getSource() == btnCreateQuiz || e.getSource() == btnModifyQuiz) {
@@ -422,22 +434,46 @@ public class UserInterface extends JFrame implements ActionListener {
 				btnCreateQuiz.setEnabled(true);
 			}
 		}
-		if(e.getSource() == btnAddWord) {					// Add word
+		if(e.getSource() == btnAddWord) {	// Add word
+			boolean alreadyExists = false;
 			if(!word.getText().equals("")) {
-				if(def.getText().equals("")) {
-					//System.out.println("definition scrape request on " + word.getText());
-					String web_definition = scrape.webScrape(word.getText());
-					if(!web_definition.equals("")) {
-						def.setText(web_definition);
+				try {
+					InputStream is = new FileInputStream(file);
+					contents = convertStreamToString(is);
+				} catch (IOException qsioe) {
+					System.out.println("add word search io error");
+				}
+				Scanner s = new Scanner(contents);
+				while(s.hasNextLine()) {
+					String thisLine = s.nextLine();
+					if(thisLine.equals("")) {
+						break;
 					}
-					else {
-						System.out.println("web scrape for input " + word.getText() + " failed.");
-					}	
+					int delim = thisLine.indexOf(':');
+					String key = thisLine.substring(0, delim);
+					if(word.getText().equals(key)) {
+						JOptionPane.showMessageDialog(contentPane, word.getText() + " already exists in the file.");
+						alreadyExists = true;
+					}
 				}
-				if(!def.getText().equals("")) {
-					System.out.println("Word: " + word.getText() + ", Def: " + def.getText());
-					sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
+				if(alreadyExists == false) {
+					if(def.getText().equals("")) {
+						//System.out.println("definition scrape request on " + word.getText());
+						String web_definition = scrape.webScrape(word.getText());
+						if(!web_definition.equals("")) {
+							def.setText(web_definition);
+						}
+						else {
+							JOptionPane.showMessageDialog(contentPane, "No definition for " + word.getText() + " was found.");
+						}	
+					}
+					if(!def.getText().equals("")) {
+						System.out.println("Word: " + word.getText() + ", Def: " + def.getText());
+						sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
+					}
 				}
+				word.setText("");
+				def.setText("");
 			}
 		}
 		if(e.getSource() == btnReturn) {					// Return to main menu and add write buffer to file
@@ -594,43 +630,84 @@ public class UserInterface extends JFrame implements ActionListener {
 				enteredQuestions = Integer.parseInt(s);
 			}
 			catch(NumberFormatException nfe) {			// disables btnStartQuiz if it can't parse the text to integer
-				btnStartQuiz.setEnabled(false);
-				System.out.println("Enter a number");
+				JOptionPane.showMessageDialog(contentPane, "Enter a number.");
+				txtQuestions.setText("");
 				return;
 			}
-			try {
-				if(file.exists() && enteredQuestions > 4 )
-					btnStartQuiz.setEnabled(true);
-				/*
-				if(enteredQuestions > numQuestions) {		// disable btnStartQuiz if enteredQuestions > numQuestions
-					btnStartQuiz.setEnabled(false);
-					return;
-				}
-				*/
-			}
-			catch(NullPointerException npe) {
-				return;
-			}
+			btnStartQuiz.setEnabled(true);
 			return;
 		}
 		if(e.getSource() == btnDeleteWord) {		// delete word
-			
-			// add word to a list, and when the file is read to the questions list,
-			// don't add any keys to the data structure that are in the remove list
-			
-			//**********
-			// delete a word here
-			//*********
-			System.out.println("delete " + word.getText());
+			boolean existsInFile = false;
+			try {
+				InputStream is = new FileInputStream(file);
+				contents = convertStreamToString(is);
+			} catch (IOException qsioe) {
+				System.out.println("add word search io error");
+			}
+			Scanner s = new Scanner(contents);
+			while(s.hasNextLine()) {
+				String thisLine = s.nextLine();
+				if(thisLine.equals("")) {
+					break;
+				}
+				int delim = thisLine.indexOf(':');
+				String key = thisLine.substring(0, delim);
+				if(word.getText().equals(key)) {
+					existsInFile = true;
+				}
+			}
+			if(existsInFile == false)
+				JOptionPane.showMessageDialog(contentPane, word.getText() + " was not found!");
+			if(existsInFile == true) {
+				// DELETE WORD FROM FILE
+				// *****************
+				// getting to here means word exists in the file
+				//
+				// 1. store first half of text file as it is looped above
+				// 2. skip the line with the word in it
+				// 3. store the rest of the file and overwrite to save
+				//
+				// *****************
+				JOptionPane.showMessageDialog(contentPane, word.getText() + " can be deleted.");
+				word.setText("");
+				def.setText("");
+			}
 		}
-		if(e.getSource() == btnExit) {				// Exit button
+		if(e.getSource() == btnSearchWord) {
+			try {
+				InputStream is = new FileInputStream(file);
+				contents = convertStreamToString(is);
+			} catch (IOException qsioe) {
+				System.out.println("search io error");
+			}
+			boolean found = false;
+			Scanner s = new Scanner(contents);
+			while(s.hasNextLine()) {
+				String thisLine = s.nextLine();
+				if(thisLine.equals("")) {
+					break;
+				}
+				int delim = thisLine.indexOf(':');
+				String key = thisLine.substring(0, delim);
+				String value = thisLine.substring(delim+1, thisLine.length());
+				if(word.getText().equals(key)) {
+					System.out.println(word.getText() + " found.");
+					def.setText(value);
+					found = true;
+				}
+			}
+			if(found == false)
+				JOptionPane.showMessageDialog(contentPane, word.getText() + " not found.");
+		}
+		if(e.getSource() == btnExit) {
 			int confirm = JOptionPane.showOptionDialog(this,
                     "Are You Sure to Close this Application?",
                     "Exit Confirmation", JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (confirm == JOptionPane.YES_OPTION) {
                 System.exit(0);
-            }							// Terminate Application
+            }
 		}
 		if(e.getSource() == btnReturnToMenu) {		// Return to menu
 			resultsPanel.setVisible(false);			// hide results panel
