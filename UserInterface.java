@@ -665,6 +665,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				def.setText("");
 			}
 		}
+		//
 		if(e.getSource() == btnSearchWord) {
 			try {
 				InputStream is = new FileInputStream(file);
@@ -676,7 +677,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			Scanner s = new Scanner(contents);
 			while(s.hasNextLine()) {
 				String thisLine = s.nextLine();
-				if(thisLine.equals("")) {
+				if(thisLine.equals(null)) {
 					break;
 				}
 				int delim = thisLine.indexOf(':');
