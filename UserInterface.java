@@ -619,8 +619,8 @@ public class UserInterface extends JFrame implements ActionListener {
 			Scanner s = new Scanner(contents);
 			while(s.hasNextLine()) {
 				String thisLine = s.nextLine();
-				//System.out.println("thisLine1: " + thisLine);
-				if(thisLine.equals("")) {
+				System.out.println("thisLine1: " + thisLine);
+				if(thisLine.equals(null)) {
 					System.out.println("empty line break");
 					break;
 				}
@@ -628,10 +628,10 @@ public class UserInterface extends JFrame implements ActionListener {
 				String key = thisLine.substring(0, delim);
 				if(word.getText().equals(key)) {
 					existsInFile = true;
-					//System.out.println("word equals key " + thisLine.substring(0, delim) );
+					System.out.println("word equals key " + thisLine.substring(0, delim) );
 				} else {
-					//System.out.println("thisLine2: " + thisLine);
-					contents2.append(thisLine + "\n");
+					System.out.println("thisLine2: " + thisLine);
+					contents2.append(thisLine);
 				}
 				
 			}
@@ -676,7 +676,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			Scanner s = new Scanner(contents);
 			while(s.hasNextLine()) {
 				String thisLine = s.nextLine();
-				if(thisLine.equals("")) {
+				if(thisLine.equals(null)) {
 					break;
 				}
 				int delim = thisLine.indexOf(':');
