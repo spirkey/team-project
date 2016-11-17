@@ -46,11 +46,9 @@ public class UserInterface extends JFrame implements ActionListener {
 	private JTextField word;						// Field to hold word
 	private JTextArea def;							// Field to hold definition
 	private JButton	btnAddWord;						// Add Word button
-	private JButton btnDeleteWord;					// Remove word button
+	private JButton btnSearchWord;					// Search Word button
+	private JButton btnDeleteWord;					// Remove Word button
 	private JButton btnReturn;						// Return to button panel
-	private BufferedWriter bw;						// 
-	private StringBuffer sb = new StringBuffer();   // 
-	private StringBuffer prevBuffer = new StringBuffer();// Read contents of a file for Modify
 	private boolean create = false;					//
 	
 	// file panel items
@@ -83,7 +81,6 @@ public class UserInterface extends JFrame implements ActionListener {
 	// info panel items --
 	private JPanel infoPanel;						// info panel
 	private JLabel infoLabel;						// information space
-	private JButton btnSearchWord;
 	
 	/**
 	 * Launch the application.
@@ -318,10 +315,10 @@ public class UserInterface extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnStartQuiz) {// Start Quiz
 			if(enteredQuestions < 4) {
-				JOptionPane.showMessageDialog(contentPane, "Quiz must consist of 4+ questions.");
+				JOptionPane.showMessageDialog(contentPane, "Not enough questions" ,"Quiz must consist of 4+ questions.", JOptionPane.WARNING_MESSAGE);
 			}
 			else if(!file.exists()) {
-				JOptionPane.showMessageDialog(contentPane, "Quiz file not found.");
+				JOptionPane.showMessageDialog(contentPane, "Quiz not found", "Quiz file not found.",JOptionPane.ERROR_MESSAGE);
 			}
 			else {
 				buttonPanel.setVisible(false);
@@ -418,7 +415,6 @@ public class UserInterface extends JFrame implements ActionListener {
 			if(e.getSource() == btnCreateQuiz) {		// Create button boolean
 				create = true;
 			}
-			sb = new StringBuffer();					// instantiate StringBuffer to hold input(s)
 		}
 		if(e.getSource() == btnFilePath) {				// Select File
 			String[] ft = {"txt"};						// String array of acceptable file types
@@ -436,12 +432,10 @@ public class UserInterface extends JFrame implements ActionListener {
 		}
 		if(e.getSource() == btnAddWord) {	// Add word
 			boolean alreadyExists = false;
-			if(!word.getText().equals("")) {
-				try {
+			try {
+				if(!word.getText().equals("")) {
 					InputStream is = new FileInputStream(file);
 					contents = convertStreamToString(is);
-				} catch (IOException qsioe) {
-					System.out.println("add word search io error");
 				}
 				Scanner s = new Scanner(contents);
 				while(s.hasNextLine()) {
@@ -452,7 +446,7 @@ public class UserInterface extends JFrame implements ActionListener {
 					int delim = thisLine.indexOf(':');
 					String key = thisLine.substring(0, delim);
 					if(word.getText().equals(key)) {
-						JOptionPane.showMessageDialog(contentPane, word.getText() + " already exists in the file.");
+						JOptionPane.showMessageDialog(contentPane, word.getText() + " already exists in the file.","Word duplicate",JOptionPane.WARNING_MESSAGE);
 						alreadyExists = true;
 					}
 				}
@@ -464,51 +458,27 @@ public class UserInterface extends JFrame implements ActionListener {
 							def.setText(web_definition);
 						}
 						else {
-							JOptionPane.showMessageDialog(contentPane, "No definition for " + word.getText() + " was found.");
-						}	
+							JOptionPane.showMessageDialog(contentPane, "No definition for " + word.getText() + " was found.", "Definition not found",JOptionPane.WARNING_MESSAGE);
+						}
 					}
 					if(!def.getText().equals("")) {
-						System.out.println("Word: " + word.getText() + ", Def: " + def.getText());
-						sb.append(word.getText() + ":" + def.getText() + System.getProperty("line.separator"));
+						// clear file
+						PrintWriter writer = new PrintWriter(file);
+						writer.print("");
+						writer.print(contents);
+						writer.println(word.getText() + ":" + def.getText());
+						writer.close();
+						JOptionPane.showMessageDialog(contentPane, "Definition for " + word.getText() + ": " + def.getText() + ".", "Definition found",JOptionPane.INFORMATION_MESSAGE);
+						//System.out.println("Word: " + word.getText() + ", Def: " + def.getText());
 					}
 				}
 				word.setText("");
 				def.setText("");
+			} catch (IOException qsioe) {
+				System.out.println("add word search io error");
 			}
 		}
 		if(e.getSource() == btnReturn) {					// Return to main menu and add write buffer to file
-			try {
-				if(create == false) {
-					InputStream is = new FileInputStream(file);
-					String previous = convertStreamToString(is);
-					System.out.println("Append previous contents:\n" + previous.toString() + " to bufferwriter");
-					prevBuffer = new StringBuffer(previous.toString());
-				}
-				else {
-					if(file.exists()) {
-						System.out.println("Delete");
-						file.delete();
-					}
-					try {
-						System.out.println("Create");
-						file.createNewFile();
-					} catch (IOException ioe) {
-						System.out.println("File creation error");
-					}
-				}
-				bw = new BufferedWriter(new FileWriter(file));
-				System.out.println("Append new contents:\n" + sb.toString() + " to bufferwriter");
-				if(create == false) {
-					bw.append(prevBuffer); 	// append prev contents if modifying file
-				}
-				bw.append(sb.toString());
-				System.out.println("bufferWriter written to file");
-				bw.flush();
-				bw.close();
-			} catch (IOException bwioe) {
-				System.out.println("bufferedwriter io error");
-			}
-			
 			wordPanel.setVisible(false);
 			btnFilePath.setEnabled(true);
 			buttonPanel.setVisible(true);
@@ -630,7 +600,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				enteredQuestions = Integer.parseInt(s);
 			}
 			catch(NumberFormatException nfe) {			// disables btnStartQuiz if it can't parse the text to integer
-				JOptionPane.showMessageDialog(contentPane, "Enter a number.");
+				JOptionPane.showMessageDialog(contentPane,"Enter a number.","Number format error",JOptionPane.ERROR_MESSAGE);
 				txtQuestions.setText("");
 				return;
 			}
@@ -639,6 +609,7 @@ public class UserInterface extends JFrame implements ActionListener {
 		}
 		if(e.getSource() == btnDeleteWord) {		// delete word
 			boolean existsInFile = false;
+			StringBuilder contents2 = new StringBuilder();
 			try {
 				InputStream is = new FileInputStream(file);
 				contents = convertStreamToString(is);
@@ -648,18 +619,38 @@ public class UserInterface extends JFrame implements ActionListener {
 			Scanner s = new Scanner(contents);
 			while(s.hasNextLine()) {
 				String thisLine = s.nextLine();
+				//System.out.println("thisLine1: " + thisLine);
 				if(thisLine.equals("")) {
+					System.out.println("empty line break");
 					break;
 				}
 				int delim = thisLine.indexOf(':');
 				String key = thisLine.substring(0, delim);
 				if(word.getText().equals(key)) {
 					existsInFile = true;
+					//System.out.println("word equals key " + thisLine.substring(0, delim) );
+				} else {
+					//System.out.println("thisLine2: " + thisLine);
+					contents2.append(thisLine + "\n");
 				}
+				
 			}
-			if(existsInFile == false)
-				JOptionPane.showMessageDialog(contentPane, word.getText() + " was not found!");
+			if(existsInFile == false) {
+				JOptionPane.showMessageDialog(contentPane, word.getText() + " was not found!","Word not found",JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 			if(existsInFile == true) {
+				try {
+					PrintWriter writer = new PrintWriter(file);
+					writer.print("");
+					writer.print(contents2);
+					//writer.println(word.getText() + ":" + def.getText());
+					writer.close();
+				} catch (FileNotFoundException e1) {
+					System.out.println("delete overwrite error.");
+				}
+				
+				
 				// DELETE WORD FROM FILE
 				// *****************
 				// getting to here means word exists in the file
@@ -669,7 +660,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				// 3. store the rest of the file and overwrite to save
 				//
 				// *****************
-				JOptionPane.showMessageDialog(contentPane, word.getText() + " can be deleted.");
+				JOptionPane.showMessageDialog(contentPane, word.getText() + " deleted.");
 				word.setText("");
 				def.setText("");
 			}
@@ -692,13 +683,13 @@ public class UserInterface extends JFrame implements ActionListener {
 				String key = thisLine.substring(0, delim);
 				String value = thisLine.substring(delim+1, thisLine.length());
 				if(word.getText().equals(key)) {
-					System.out.println(word.getText() + " found.");
+					JOptionPane.showMessageDialog(contentPane, word.getText() + " was found!","Word located",JOptionPane.INFORMATION_MESSAGE);
 					def.setText(value);
 					found = true;
 				}
 			}
 			if(found == false)
-				JOptionPane.showMessageDialog(contentPane, word.getText() + " not found.");
+				JOptionPane.showMessageDialog(contentPane, word.getText() + " was not found!", "Word not found",JOptionPane.WARNING_MESSAGE);
 		}
 		if(e.getSource() == btnExit) {
 			int confirm = JOptionPane.showOptionDialog(this,
