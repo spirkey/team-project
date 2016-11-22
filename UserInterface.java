@@ -466,8 +466,9 @@ public class UserInterface extends JFrame implements ActionListener {
 						PrintWriter writer = new PrintWriter(file);
 						writer.print("");
 						writer.print(contents);
-						writer.println();
+						//writer.println();
 						writer.print(word.getText() + ":" + def.getText());
+						writer.println();
 						writer.close();
 						JOptionPane.showMessageDialog(contentPane, word.getText() + ":" + def.getText() + ".", word.getText() + " added",JOptionPane.INFORMATION_MESSAGE);
 						//System.out.println("Word: " + word.getText() + ", Def: " + def.getText());
