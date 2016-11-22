@@ -314,7 +314,7 @@ public class UserInterface extends JFrame implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnStartQuiz) {// Start Quiz
-			if(enteredQuestions < 4) {
+			if(enteredQuestions < 4) {		// make sure the user has entered enough questions to randomize questions
 				JOptionPane.showMessageDialog(contentPane, "Not enough questions" ,"Quiz must consist of 4+ questions.", JOptionPane.WARNING_MESSAGE);
 			}
 			else if(!file.exists()) {
@@ -458,7 +458,7 @@ public class UserInterface extends JFrame implements ActionListener {
 							def.setText(web_definition);
 						}
 						else {
-							JOptionPane.showMessageDialog(contentPane, "No definition for " + word.getText() + " was found.", "Definition not found",JOptionPane.WARNING_MESSAGE);
+							JOptionPane.showMessageDialog(contentPane, "No definition for " + word.getText() + " found.", "Definition not found",JOptionPane.WARNING_MESSAGE);
 						}
 					}
 					if(!def.getText().equals("")) {
@@ -466,9 +466,10 @@ public class UserInterface extends JFrame implements ActionListener {
 						PrintWriter writer = new PrintWriter(file);
 						writer.print("");
 						writer.print(contents);
-						writer.println(word.getText() + ":" + def.getText());
+						writer.println();
+						writer.print(word.getText() + ":" + def.getText());
 						writer.close();
-						JOptionPane.showMessageDialog(contentPane, "Definition for " + word.getText() + ": " + def.getText() + ".", "Definition found",JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(contentPane, word.getText() + ":" + def.getText() + ".", word.getText() + " added",JOptionPane.INFORMATION_MESSAGE);
 						//System.out.println("Word: " + word.getText() + ", Def: " + def.getText());
 					}
 				}
@@ -614,56 +615,55 @@ public class UserInterface extends JFrame implements ActionListener {
 				InputStream is = new FileInputStream(file);
 				contents = convertStreamToString(is);
 			} catch (IOException qsioe) {
-				System.out.println("add word search io error");
+				System.out.println("delete word contents io error");
 			}
-			Scanner s = new Scanner(contents);
+			Scanner s = new Scanner(contents);				// contents of file in scanner
+			boolean newLineBool = true;						// want to put newline after every line except 1st and deleted character
 			while(s.hasNextLine()) {
 				String thisLine = s.nextLine();
-				//System.out.println("thisLine1: " + thisLine);
+				System.out.println("thisLine1: " + thisLine);
+				if(newLineBool == true) {					
+					
+				}
+				else {
+					contents2.append("\n");
+				}
 				if(thisLine.equals("")) {
 					System.out.println("empty line break");
 					break;
 				}
+				newLineBool = false;
 				int delim = thisLine.indexOf(':');
 				String key = thisLine.substring(0, delim);
 				if(word.getText().equals(key)) {
 					existsInFile = true;
-					//System.out.println("word equals key " + thisLine.substring(0, delim) );
+					newLineBool = true;
+					System.out.println("word equals key " + thisLine.substring(0, delim) );
 				} else {
-					//System.out.println("thisLine2: " + thisLine);
-					contents2.append(thisLine + "\n");
+					System.out.println("thisLine2: " + thisLine);
+					contents2.append(thisLine);
 				}
-				
 			}
 			if(existsInFile == false) {
 				JOptionPane.showMessageDialog(contentPane, word.getText() + " was not found!","Word not found",JOptionPane.WARNING_MESSAGE);
+				s.close();
 				return;
 			}
 			if(existsInFile == true) {
 				try {
 					PrintWriter writer = new PrintWriter(file);
 					writer.print("");
-					writer.print(contents2);
-					//writer.println(word.getText() + ":" + def.getText());
+					writer.print(contents2.toString());
+					//System.out.println(contents2);
 					writer.close();
 				} catch (FileNotFoundException e1) {
 					System.out.println("delete overwrite error.");
 				}
-				
-				
-				// DELETE WORD FROM FILE
-				// *****************
-				// getting to here means word exists in the file
-				//
-				// 1. store first half of text file as it is looped above
-				// 2. skip the line with the word in it
-				// 3. store the rest of the file and overwrite to save
-				//
-				// *****************
 				JOptionPane.showMessageDialog(contentPane, word.getText() + " deleted.");
 				word.setText("");
 				def.setText("");
 			}
+			s.close();
 		}
 		//
 		if(e.getSource() == btnSearchWord) {
@@ -684,13 +684,13 @@ public class UserInterface extends JFrame implements ActionListener {
 				String key = thisLine.substring(0, delim);
 				String value = thisLine.substring(delim+1, thisLine.length());
 				if(word.getText().equals(key)) {
-					JOptionPane.showMessageDialog(contentPane, word.getText() + " was found!","Word located",JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(contentPane, word.getText() + " found.","Word located",JOptionPane.INFORMATION_MESSAGE);
 					def.setText(value);
 					found = true;
 				}
 			}
 			if(found == false)
-				JOptionPane.showMessageDialog(contentPane, word.getText() + " was not found!", "Word not found",JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(contentPane, word.getText() + " not found.", "Word not located",JOptionPane.WARNING_MESSAGE);
 		}
 		if(e.getSource() == btnExit) {
 			int confirm = JOptionPane.showOptionDialog(this,
