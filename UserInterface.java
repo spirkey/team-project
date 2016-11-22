@@ -690,8 +690,12 @@ public class UserInterface extends JFrame implements ActionListener {
 				}
 			}
 			if(found == false)
+			{
 				JOptionPane.showMessageDialog(contentPane, word.getText() + " not found.", "Word not located",JOptionPane.WARNING_MESSAGE);
-		}
+				def.setText(null);
+			}
+			
+			}
 		if(e.getSource() == btnExit) {
 			int confirm = JOptionPane.showOptionDialog(this,
                     "Are You Sure to Close this Application?",
