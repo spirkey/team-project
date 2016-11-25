@@ -10,7 +10,7 @@ public class UserInterface extends JFrame implements ActionListener {
 	private Question question;						// Question object
 	private StringBuilder results;					// hold results information
 	
-	private quiz_Logic2 quizLogic = new quiz_Logic2();			// quiz logic
+	private Quiz_Logic quizLogic = new Quiz_Logic();			// quiz logic
 	private Random r = new Random(System.currentTimeMillis());	// random
 	private String contents;						// content of text file
 	private String wrongAnswer1;					// incorrect answers
@@ -314,8 +314,27 @@ public class UserInterface extends JFrame implements ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnStartQuiz) {// Start Quiz
+			// counts numQuestions
+			try {
+				InputStream is = new FileInputStream(file);
+				contents = convertStreamToString(is);
+			} catch (IOException qsioe) {
+				System.out.println("start quiz count contents io error");
+			}
+			int count = 0;
+			Scanner s = new Scanner(contents);
+			while(s.hasNextLine()) {
+				String thisLine = s.nextLine();
+				if(thisLine.equals(null)) {
+					break;
+				}
+				count++;
+			}
 			if(enteredQuestions < 4) {		// make sure the user has entered enough questions to randomize questions
-				JOptionPane.showMessageDialog(contentPane, "Not enough questions" ,"Quiz must consist of 4+ questions.", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(contentPane, "Quiz must consist of 4+ questions.", "Not enough questions" , JOptionPane.WARNING_MESSAGE);
+			}
+			else if(enteredQuestions > count) {
+				JOptionPane.showMessageDialog(contentPane, "Number of Questions exceeds those in file.\nEnter a number up to " + count + "." ,"Too many questions", JOptionPane.WARNING_MESSAGE);
 			}
 			else if(!file.exists()) {
 				JOptionPane.showMessageDialog(contentPane, "Quiz not found", "Quiz file not found.",JOptionPane.ERROR_MESSAGE);
@@ -413,7 +432,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			wordPanel.setVisible(true);					// word panel 'opened'
 			btnFilePath.setEnabled(false);
 			if(e.getSource() == btnCreateQuiz) {		// Create button boolean
-				create = true;
+				create = true;							// *** do something different for create ***
 			}
 		}
 		if(e.getSource() == btnFilePath) {				// Select File
@@ -479,7 +498,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				System.out.println("add word search io error");
 			}
 		}
-		if(e.getSource() == btnReturn) {					// Return to main menu and add write buffer to file
+		if(e.getSource() == btnReturn) {				// Return to main menu
 			wordPanel.setVisible(false);
 			btnFilePath.setEnabled(true);
 			buttonPanel.setVisible(true);
@@ -516,6 +535,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			System.out.println("You chose " + s + " that is " + question.isRight());
 			
 			// detect end of quiz
+			System.out.println(currentQuestion + "/" +  enteredQuestions);
 			if(currentQuestion == enteredQuestions) {		// handles end of quiz
 				results.append("You scored " + correctAns + " out of " + enteredQuestions);
 				quizPanel.setVisible(false);				// hides quiz interface (CENTER)
@@ -524,6 +544,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				endPanel.setVisible(true);					// presents end panel
 				ta.setText(results.toString());
 				ta.setCaretPosition(0);						// sets cursor back to beginning of the text area so that user will scroll down
+				return;
 			}
 			currentQuestion++;
 			
@@ -602,6 +623,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			}
 			catch(NumberFormatException nfe) {			// disables btnStartQuiz if it can't parse the text to integer
 				JOptionPane.showMessageDialog(contentPane,"Enter a number.","Number format error",JOptionPane.ERROR_MESSAGE);
+				btnStartQuiz.setEnabled(false);
 				txtQuestions.setText("");
 				return;
 			}

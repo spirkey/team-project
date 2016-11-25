@@ -1,11 +1,11 @@
 import java.util.*;
 
 
-public class quiz_Logic2 {
+public class Quiz_Logic {
 		// the Word class
 		protected static Map<String, String> map;
 		
-		public quiz_Logic2() {
+		public Quiz_Logic() {
 			map = new HashMap<String, String>();
 		}
 		
