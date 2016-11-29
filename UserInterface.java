@@ -481,7 +481,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				Scanner s = new Scanner(contents);
 				while(s.hasNextLine()) {
 					String thisLine = s.nextLine();
-					if(thisLine.equals("")) {
+					if(thisLine.equals(null)) {
 						break;
 					}
 					int delim = thisLine.indexOf(':');
@@ -666,15 +666,12 @@ public class UserInterface extends JFrame implements ActionListener {
 			while(s.hasNextLine()) {
 				String thisLine = s.nextLine();
 				System.out.println("thisLine1: " + thisLine);
-				if(newLineBool == true) {					
-					
-				}
-				else {
-					contents2.append("\n");
-				}
-				if(thisLine.equals("")) {
+				if(thisLine.equals(null)) {
 					System.out.println("empty line break");
 					break;
+				}
+				if(newLineBool == false) {
+					contents2.append("\n");
 				}
 				newLineBool = false;
 				int delim = thisLine.indexOf(':');
@@ -684,10 +681,24 @@ public class UserInterface extends JFrame implements ActionListener {
 					newLineBool = true;
 					System.out.println("word equals key " + thisLine.substring(0, delim) );
 				} else {
-					System.out.println("thisLine2: " + thisLine);
+					System.out.println("thisLine2: " + thisLine);			// thisLine 2
 					contents2.append(thisLine);
 				}
 			}
+			//System.out.println("2\n" + contents2);
+			StringBuilder contents3 = new StringBuilder();
+			s = new Scanner(contents2.toString());
+			boolean start = true;
+			while(s.hasNextLine()) {
+				if(start == false)
+					contents3.append("\n");
+				String thisLine = s.nextLine();
+				if(!thisLine.equals(null)) {
+					contents3.append(thisLine);
+				}
+				start = false;
+			}
+			//System.out.println("3\n" + contents3);
 			if(existsInFile == false) {
 				JOptionPane.showMessageDialog(contentPane, word.getText() + " was not found!","Word not found",JOptionPane.WARNING_MESSAGE);
 				s.close();
@@ -697,7 +708,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				try {
 					PrintWriter writer = new PrintWriter(file);
 					writer.print("");
-					writer.print(contents2.toString());
+					writer.print(contents3.toString());
 					//System.out.println(contents2);
 					writer.close();
 				} catch (FileNotFoundException e1) {
