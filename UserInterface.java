@@ -37,7 +37,6 @@ public class UserInterface extends JFrame implements ActionListener {
 	// button panel items 
 	private JPanel buttonPanel;						// Button panel
 	private JButton btnStartQuiz;					// Start Quiz button
-	private JButton btnCreateQuiz;					// Create Quiz button
 	private JButton btnModifyQuiz;					// Modify Quiz button
 	private JTextField txtQuestions;				// Number of questions
 	
@@ -136,32 +135,25 @@ public class UserInterface extends JFrame implements ActionListener {
 		btnStartQuiz = new JButton("Start Quiz");
 		btnStartQuiz.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnStartQuiz.setEnabled(false);
-		btnStartQuiz.setBounds(213, 33, 133, 39);
+		btnStartQuiz.setBounds(213, 51, 133, 39);
 		buttonPanel.add(btnStartQuiz);
 		btnStartQuiz.addActionListener(this);
-		
-		btnCreateQuiz = new JButton("Create Quiz");
-		btnCreateQuiz.setFont(new Font("Dialog", Font.PLAIN, 12));
-		btnCreateQuiz.setEnabled(false);
-		btnCreateQuiz.setBounds(213, 95, 133, 39);
-		buttonPanel.add(btnCreateQuiz);
-		btnCreateQuiz.addActionListener(this);
 		
 		btnModifyQuiz = new JButton("Modify Quiz");
 		btnModifyQuiz.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnModifyQuiz.setEnabled(false);
-		btnModifyQuiz.setBounds(213, 155, 133, 40);
+		btnModifyQuiz.setBounds(213, 113, 133, 40);
 		buttonPanel.add(btnModifyQuiz);
 		btnModifyQuiz.addActionListener(this);
 		
 		JLabel lblQuestions = new JLabel("Number of Questions:");
 		lblQuestions.setFont(new Font("Dialog", Font.PLAIN, 12));
 		//lblQuestions.setToolTipText("Must be greater than 4 and less than the number of quiz terms");
-        lblQuestions.setBounds(173, 214, 133, 22);
+        lblQuestions.setBounds(173, 190, 133, 22);
         buttonPanel.add(lblQuestions);
 		
 		txtQuestions = new JTextField("");
-		txtQuestions.setBounds(316, 211, 30, 30);
+		txtQuestions.setBounds(316, 187, 30, 30);
 		buttonPanel.add(txtQuestions);
 		txtQuestions.addActionListener(this);
 		
@@ -449,13 +441,13 @@ public class UserInterface extends JFrame implements ActionListener {
 			}
 			
 		}
-		if(e.getSource() == btnCreateQuiz || e.getSource() == btnModifyQuiz) {
+		if(e.getSource() == btnModifyQuiz) {
 			buttonPanel.setVisible(false);
 			wordPanel.setVisible(true);					// word panel 'opened'
 			btnFilePath.setEnabled(false);
-			if(e.getSource() == btnCreateQuiz) {		// Create button boolean
-				create = true;							// *** do something different for create ***
-			}
+			//if(e.getSource() == btnCreateQuiz) {		// Create button boolean
+			//	create = true;							// *** do something different for create ***
+			//}
 		}
 		if(e.getSource() == btnFilePath) {				// Select File
 			String[] ft = {"txt"};						// String array of acceptable file types
@@ -468,7 +460,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				txtFilePath.setText(path);
 				txtQuestions.setText("");
 				btnModifyQuiz.setEnabled(true);
-				btnCreateQuiz.setEnabled(true);
+				//btnCreateQuiz.setEnabled(true);
 			}
 		}
 		if(e.getSource() == btnAddWord) {	// Add word
