@@ -10,7 +10,7 @@ public class UserInterface extends JFrame implements ActionListener {
 	private Question question;						// Question object
 	private StringBuilder results;					// hold results information
 	
-	private quiz_Logic2 quizLogic = new quiz_Logic2();			// quiz logic
+	private Quiz_Logic quizLogic = new Quiz_Logic();			// quiz logic
 	private Random r = new Random(System.currentTimeMillis());	// random
 	private String contents;						// content of text file
 	private String wrongAnswer1;					// incorrect answers
@@ -106,7 +106,7 @@ public class UserInterface extends JFrame implements ActionListener {
 		// Main Menu Window
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(450, 450, 450, 300);
+		setBounds(450, 450, 580, 360);
 		contentPane = new JPanel();
 		setContentPane(contentPane);
 		BorderLayout borders = new BorderLayout(5, 5);
@@ -116,7 +116,7 @@ public class UserInterface extends JFrame implements ActionListener {
 		
 		titlePanel = new JPanel();
 		JLabel titleLabel = new JLabel("Vocabulary Quiz");
-		titleLabel.setFont(new Font("Ravie", Font.PLAIN, 22));
+		titleLabel.setFont(new Font("Ravie", Font.PLAIN, 24));
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		titlePanel.add(titleLabel);
 		contentPane.add(titlePanel,BorderLayout.NORTH);
@@ -134,30 +134,34 @@ public class UserInterface extends JFrame implements ActionListener {
 		buttonPanel.setLayout(null);
 		
 		btnStartQuiz = new JButton("Start Quiz");
+		btnStartQuiz.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnStartQuiz.setEnabled(false);
-		btnStartQuiz.setBounds(159, 27, 117, 29);
+		btnStartQuiz.setBounds(213, 33, 133, 39);
 		buttonPanel.add(btnStartQuiz);
 		btnStartQuiz.addActionListener(this);
 		
 		btnCreateQuiz = new JButton("Create Quiz");
+		btnCreateQuiz.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnCreateQuiz.setEnabled(false);
-		btnCreateQuiz.setBounds(159, 67, 117, 29);
+		btnCreateQuiz.setBounds(213, 95, 133, 39);
 		buttonPanel.add(btnCreateQuiz);
 		btnCreateQuiz.addActionListener(this);
 		
 		btnModifyQuiz = new JButton("Modify Quiz");
+		btnModifyQuiz.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnModifyQuiz.setEnabled(false);
-		btnModifyQuiz.setBounds(159, 107, 117, 29);
+		btnModifyQuiz.setBounds(213, 155, 133, 40);
 		buttonPanel.add(btnModifyQuiz);
 		btnModifyQuiz.addActionListener(this);
 		
 		JLabel lblQuestions = new JLabel("Number of Questions:");
+		lblQuestions.setFont(new Font("Dialog", Font.PLAIN, 12));
 		//lblQuestions.setToolTipText("Must be greater than 4 and less than the number of quiz terms");
-        lblQuestions.setBounds(125, 158, 133, 22);
+        lblQuestions.setBounds(173, 214, 133, 22);
         buttonPanel.add(lblQuestions);
 		
 		txtQuestions = new JTextField("");
-		txtQuestions.setBounds(260, 154, 30, 30);
+		txtQuestions.setBounds(316, 211, 30, 30);
 		buttonPanel.add(txtQuestions);
 		txtQuestions.addActionListener(this);
 		
@@ -170,44 +174,50 @@ public class UserInterface extends JFrame implements ActionListener {
 		wordPanel.setLayout(null);
 		
 		JLabel lblword = new JLabel("Word: ");
+		lblword.setFont(new Font("Dialog", Font.PLAIN, 12));
 		lblword.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblword.setBounds(58, 33, 52, 14);
+		lblword.setBounds(86, 33, 52, 14);
 		wordPanel.add(lblword);
 
 		word = new JTextField();
-		word.setBounds(120, 30, 150, 20);
+		word.setBounds(168, 31, 150, 20);
 		wordPanel.add(word);
 		word.setColumns(18);
 		
 		JLabel lblDefinition = new JLabel("Definition: ");
+		lblDefinition.setFont(new Font("Dialog", Font.PLAIN, 12));
 		lblDefinition.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblDefinition.setBounds(46, 58, 70, 14);
+		lblDefinition.setBounds(68, 64, 70, 14);
 		wordPanel.add(lblDefinition);
 		
 		def = new JTextArea();
 		def.setLineWrap(true);
 		def.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-		def.setBounds(120, 61, 257, 64);
+		def.setBounds(168, 61, 307, 100);
 		wordPanel.add(def);
 		def.setColumns(18);
 		
 		btnAddWord = new JButton("Add word");
-		btnAddWord.setBounds(12, 136, 101, 31);
+		btnAddWord.setFont(new Font("Dialog", Font.PLAIN, 12));
+		btnAddWord.setBounds(32, 186, 117, 39);
 		wordPanel.add(btnAddWord);
 		btnAddWord.addActionListener(this);
 		
 		btnSearchWord = new JButton("Search");
-		btnSearchWord.setBounds(120, 136, 101, 31);
+		btnSearchWord.setFont(new Font("Dialog", Font.PLAIN, 12));
+		btnSearchWord.setBounds(159, 186, 117, 39);
 		wordPanel.add(btnSearchWord);
 		btnSearchWord.addActionListener(this);
 		
 		btnDeleteWord = new JButton("Strike word");
-		btnDeleteWord.setBounds(231, 136, 100, 31);
+		btnDeleteWord.setFont(new Font("Dialog", Font.PLAIN, 12));
+		btnDeleteWord.setBounds(286, 186, 117, 39);
 		wordPanel.add(btnDeleteWord);
 		btnDeleteWord.addActionListener(this);
 		
 		btnReturn = new JButton("Return");
-		btnReturn.setBounds(335, 136, 97, 31);
+		btnReturn.setFont(new Font("Dialog", Font.PLAIN, 12));
+		btnReturn.setBounds(413, 186, 118, 39);
 		wordPanel.add(btnReturn);
 		btnReturn.addActionListener(this);
 		
@@ -225,6 +235,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			// File selection button
 		
 		btnFilePath = new JButton("File path");
+		btnFilePath.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnFilePath.setToolTipText("Select a .txt file");
 		filePanel.add(btnFilePath);
 		btnFilePath.addActionListener(this);
@@ -232,6 +243,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			// File path display
 		
 		txtFilePath = new JTextField();
+		txtFilePath.setFont(new Font("Dialog", Font.PLAIN, 12));
 		txtFilePath.setColumns(25);
 		filePanel.add(txtFilePath);
 		
@@ -243,22 +255,27 @@ public class UserInterface extends JFrame implements ActionListener {
 		quizPanel.setLayout(new GridLayout(6, 1, 0, 0));
 		
 		lblQuestion = new JLabel("Question");
+		lblQuestion.setFont(new Font("Dialog", Font.PLAIN, 12));
 		lblQuestion.setHorizontalAlignment(SwingConstants.CENTER);
 		quizPanel.add(lblQuestion);
 		
 		radio1 = new JRadioButton("radio1");
+		radio1.setFont(new Font("Dialog", Font.PLAIN, 12));
 		quizPanel.add(radio1);
 		radio1.addActionListener(this);
 		
 		radio2 = new JRadioButton("radio2");
+		radio2.setFont(new Font("Dialog", Font.PLAIN, 12));
 		quizPanel.add(radio2);
 		radio2.addActionListener(this);
 		
 		radio3 = new JRadioButton("radio3");
+		radio3.setFont(new Font("Dialog", Font.PLAIN, 12));
 		quizPanel.add(radio3);
 		radio3.addActionListener(this);
 		
 		radio4 = new JRadioButton("radio4");
+		radio4.setFont(new Font("Dialog", Font.PLAIN, 12));
 		quizPanel.add(radio4);
 		radio4.addActionListener(this);
 		
@@ -269,6 +286,7 @@ public class UserInterface extends JFrame implements ActionListener {
 		rg.add(radio4);
 		
 		btnNext = new JButton("Next");
+		btnNext.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnNext.setEnabled(false);
 		quizPanel.add(btnNext);
 		btnNext.addActionListener(this);
@@ -280,6 +298,7 @@ public class UserInterface extends JFrame implements ActionListener {
 		bottom.add(infoPanel);
 		
 		infoLabel = new JLabel(":: Question: X/Y");
+		infoLabel.setFont(new Font("Dialog", Font.PLAIN, 12));
 		infoPanel.add(infoLabel);
 		
 		// End of quiz panel (BOTTOM)
@@ -287,9 +306,11 @@ public class UserInterface extends JFrame implements ActionListener {
 		endPanel = new JPanel();
 		bottom.add(endPanel);
 		btnReturnToMenu = new JButton("Return to Menu");
+		btnReturnToMenu.setFont(new Font("Dialog", Font.PLAIN, 12));
 		endPanel.add(btnReturnToMenu);
 		btnReturnToMenu.addActionListener(this);
 		btnExit = new JButton("Exit");
+		btnExit.setFont(new Font("Dialog", Font.PLAIN, 12));
 		btnExit.addActionListener(this);
 		endPanel.add(btnExit);
 		
@@ -298,24 +319,44 @@ public class UserInterface extends JFrame implements ActionListener {
 		resultsPanel = new JPanel();
 		center.add(resultsPanel);					
 		lblResults.setHorizontalAlignment(SwingConstants.CENTER);
-        lblResults.setFont(new Font("Tahoma", Font.PLAIN, 17));
-        lblResults.setBounds(184, 0, 74, 25);
+        lblResults.setFont(new Font("Dialog", Font.PLAIN, 17));
+        lblResults.setBounds(250, 0, 74, 25);
         resultsPanel.add(lblResults);				// title label that says "Results"
-		ta = new JTextArea();						// make text area
-		ta.setLineWrap(true);
-		sp = new JScrollPane(ta);					// add text area to scroll pane
-		sp.setBounds(10, 25, 422, 153);
+		sp = new JScrollPane();					// add text area to scroll pane
+		sp.setBounds(10, 25, 552, 209);
 		sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		resultsPanel.setLayout(null);
 		resultsPanel.add(sp);						// add scroll pane to results panel
+		ta = new JTextArea();
+		sp.setViewportView(ta);
+		ta.setLineWrap(true);
 	}
 	
 	// Action handlers for everything
 	
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnStartQuiz) {// Start Quiz
+			// counts numQuestions
+			try {
+				InputStream is = new FileInputStream(file);
+				contents = convertStreamToString(is);
+			} catch (IOException qsioe) {
+				System.out.println("start quiz count contents io error");
+			}
+			int count = 0;
+			Scanner s = new Scanner(contents);
+			while(s.hasNextLine()) {
+				String thisLine = s.nextLine();
+				if(thisLine.equals(null)) {
+					break;
+				}
+				count++;
+			}
 			if(enteredQuestions < 4) {		// make sure the user has entered enough questions to randomize questions
-				JOptionPane.showMessageDialog(contentPane, "Not enough questions" ,"Quiz must consist of 4+ questions.", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(contentPane, "Quiz must consist of 4+ questions.", "Not enough questions" , JOptionPane.WARNING_MESSAGE);
+			}
+			else if(enteredQuestions > count) {
+				JOptionPane.showMessageDialog(contentPane, "Number of Questions exceeds those in file.\nEnter a number up to " + count + "." ,"Too many questions", JOptionPane.WARNING_MESSAGE);
 			}
 			else if(!file.exists()) {
 				JOptionPane.showMessageDialog(contentPane, "Quiz not found", "Quiz file not found.",JOptionPane.ERROR_MESSAGE);
@@ -413,7 +454,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			wordPanel.setVisible(true);					// word panel 'opened'
 			btnFilePath.setEnabled(false);
 			if(e.getSource() == btnCreateQuiz) {		// Create button boolean
-				create = true;
+				create = true;							// *** do something different for create ***
 			}
 		}
 		if(e.getSource() == btnFilePath) {				// Select File
@@ -480,7 +521,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				System.out.println("add word search io error");
 			}
 		}
-		if(e.getSource() == btnReturn) {					// Return to main menu and add write buffer to file
+		if(e.getSource() == btnReturn) {				// Return to main menu
 			wordPanel.setVisible(false);
 			btnFilePath.setEnabled(true);
 			buttonPanel.setVisible(true);
@@ -517,6 +558,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			System.out.println("You chose " + s + " that is " + question.isRight());
 			
 			// detect end of quiz
+			System.out.println(currentQuestion + "/" +  enteredQuestions);
 			if(currentQuestion == enteredQuestions) {		// handles end of quiz
 				results.append("You scored " + correctAns + " out of " + enteredQuestions);
 				quizPanel.setVisible(false);				// hides quiz interface (CENTER)
@@ -525,6 +567,7 @@ public class UserInterface extends JFrame implements ActionListener {
 				endPanel.setVisible(true);					// presents end panel
 				ta.setText(results.toString());
 				ta.setCaretPosition(0);						// sets cursor back to beginning of the text area so that user will scroll down
+				return;
 			}
 			currentQuestion++;
 			
@@ -603,6 +646,7 @@ public class UserInterface extends JFrame implements ActionListener {
 			}
 			catch(NumberFormatException nfe) {			// disables btnStartQuiz if it can't parse the text to integer
 				JOptionPane.showMessageDialog(contentPane,"Enter a number.","Number format error",JOptionPane.ERROR_MESSAGE);
+				btnStartQuiz.setEnabled(false);
 				txtQuestions.setText("");
 				return;
 			}
